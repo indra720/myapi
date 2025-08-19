@@ -149,6 +149,8 @@
 
 
 
+
+
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -161,25 +163,30 @@ const Api2 = () => {
   const [editId, setEditId] = useState(null);
 
   // GET
-  const getuserdata = async()=>{
+  const getuserdata = async () => {
+    try {
+      const response = await axios.get("https://ecommerce-backend-sf4n.onrender.com/api/v1/auth/me",{
+        withCredentials:true
+      });
 
-    try{
-     const response = await Extra
-      .get("/auth/me")
-      
-        setuserdata(response.data);
-        console.log(response.data);
-        toast(response.data.message)
-        setloading(false);
-    }catch(err){
-      toast(err.message)
-          console.log(err)
+      setuserdata(response.data);
+      console.log(response.data);
+      toast(response.data.message);
+      setloading(false);
+    } catch (err) {
+      console.log(err.response.data.message)
+      if (err.response.data.message) {
+        toast(err.response.data.message);
+        
+      } else {
+        toast(err.message);
+        console.log(err);
+      }
     }
-  }
+  };
 
   useEffect(() => {
-    
-     getuserdata()
+    getuserdata();
   }, []);
 
   // FORM DATA
@@ -196,56 +203,54 @@ const Api2 = () => {
   };
 
   // ADD OR UPDATE
-  const handlesubmit =async(e) => {
+  const handlesubmit = async (e) => {
     e.preventDefault();
-      try{
-    if (editId) {
-      const response = await axios
-        .put(`https://ecommerce-backend-sf4n.onrender.com/api/v1/auth/update`, formdata)
-        
-          setuserdata(
-            userdata.map((user) => (user.id === editId ? response.data : user))
-          );
-          setformdata({
-            userName: "",
-            email: "",
-            password: "",
-            phoneNumber: "",
-          });
-          setEditId(null);
-      
-    } else {
-      // REGISTER USER
-      const response = await axios
-        .post(
+    try {
+      if (editId) {
+        const response = await axios.put(
+          `https://ecommerce-backend-sf4n.onrender.com/api/v1/auth/update`,
+          formdata
+        );
+
+        setuserdata(
+          userdata.map((user) => (user.id === editId ? response.data : user))
+        );
+        setformdata({
+          userName: "",
+          email: "",
+          password: "",
+          phoneNumber: "",
+        });
+        setEditId(null);
+      } else {
+        // REGISTER USER
+        const response = await axios.post(
           "https://ecommerce-backend-sf4n.onrender.com/api/v1/auth/register",
           formdata,
-          {
-            headers: { "Content-Type": "application/json" }, //  important
-            // withCredentials: true,
+          { 
+             withCredentials: true,
           }
-        )
-        
-     
-           console.log("User Registered:", response.data);
-          setuserdata([...userdata, response.data]);
-          localStorage.setItem("user", JSON.stringify(response.data));
-          toast(response.data.message)
-          setformdata({
-            userName: "",
-            email: "",
-            password: "",
-            phoneNumber: "",
-          });
-          
-        
-       }
-        
+        );
+
+        console.log("User Registered:", response.data);
+        setuserdata([...userdata, response.data]);
+        localStorage.setItem("user", JSON.stringify(response.data));
+        toast(response.data.message);
+        setformdata({
+          userName: "",
+          email: "",
+          password: "",
+          phoneNumber: "",
+        });
+      }
+    } catch (err) {
+      if (err.response.data.message) {
+        toast(err.response.data.message);
+      } else {
+        toast(err.message);
+        console.log(err);
+      }
     }
-    catch(err){
-          toast(err.message)
-          console.error("Register Error:", err.response?.data || err.message);
-        }
   };
 
   // EDIT

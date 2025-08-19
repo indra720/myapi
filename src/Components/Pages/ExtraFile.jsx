@@ -2,7 +2,7 @@ import axios from "axios";
 
 const Extra = axios.create({
   baseURL: "https://ecommerce-backend-sf4n.onrender.com/api/v1",
-  withCredentials: true,   // 👈 cookies (JWT) bhejne ke liye
+  withCredentials: true,   //  cookies (JWT) bhejne ke liye
 });
 
 // request interceptor -> dev case me token bhej dega
