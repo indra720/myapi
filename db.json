@@ -1,0 +1,19 @@
+{
+  "users": [
+    {
+      "userName": "indrajeet",
+      "email": "indrajeedhakedt23@gmailcom",
+      "password": "123456789",
+      "PhoneNo": "7878886717",
+      "phoneNumber": "7585674523",
+      "id": "76ed"
+    },
+    {
+      "userName": "surja prasad",
+      "email": "spyadav234@gmail.com",
+      "password": "123456789",
+      "phoneNumber": "8990785645",
+      "id": "360b"
+    }
+  ]
+}
