@@ -156,38 +156,22 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 import Extra from "./ExtraFile";
+import { useFormState } from "react-dom";
 
 const Api2 = () => {
   const [userdata, setuserdata] = useState([]);
   const [loading, setloading] = useState(true);
   const [editId, setEditId] = useState(null);
 
-  // GET
-  const getuserdata = async () => {
-    try {
-      const response = await axios.get("https://ecommerce-backend-sf4n.onrender.com/api/v1/auth/me",{
-        withCredentials:true
-      });
 
-      setuserdata(response.data);
-      console.log(response.data);
-      toast(response.data.message);
-      setloading(false);
-    } catch (err) {
-      console.log(err.response.data.message)
-      if (err.response.data.message) {
-        toast(err.response.data.message);
-        
-      } else {
-        toast(err.message);
-        console.log(err);
-      }
-    }
-  };
-
-  useEffect(() => {
-    getuserdata();
+    useEffect(() => {
+  
+    getallusers()
   }, []);
+  // GET
+
+
+
 
   // FORM DATA
   const [formdata, setformdata] = useState({
@@ -272,6 +256,32 @@ const Api2 = () => {
         setuserdata(userdata.filter((user) => user.id !== id));
       });
   };
+  
+
+const getallusers = async () => {
+  try {
+    const response = await axios.get(
+      "https://ecommerce-backend-sf4n.onrender.com/api/v1/admin/user",
+      { withCredentials: true }
+    );
+
+    console.log("All users:", response);
+
+    // yaha user array aa raha hai
+    if (response.data.data) {
+      setuserdata(response.data.data); 
+    } else {
+      setuserdata([]);
+    }
+    setloading(false);
+
+  } catch (err) {
+    console.log("Error fetching all users:", err);
+    toast(err?.response?.data?.message || "Failed to fetch users");
+    setloading(false);
+  }
+};
+
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
@@ -357,37 +367,27 @@ const Api2 = () => {
               </tr>
             </thead>
             <tbody>
-              {/* {userdata.map((user) => (
-                <tr
-                  key={user.id}
-                  className="border-b hover:bg-gray-100 transition"
-                >
-                  <td className="p-3">{user.id}</td>
-                  <td className="p-3">{user.name}</td>
-                  <td className="p-3">{user.email}</td>
-                  <td className="p-3 flex justify-center space-x-3">
-                    <button
-                      onClick={() => handleedit(user)}
-                      className="px-3 py-1 rounded-lg bg-yellow-400 hover:bg-yellow-500 text-white"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handledelete(user.id)}
-                      className="px-3 py-1 rounded-lg bg-red-500 hover:bg-red-600 text-white"
-                    >
-                      Delete
-                    </button>
-                  </td>
+               {userdata.length > 0 ? (
+              userdata.map((user) => (
+                <tr key={user.id}>
+                  <td>{user.id}</td>
+                  <td>{user.userName}</td>
+                  <td>{user.email}</td>
+                  <td>{user.phoneNumber}</td>
                 </tr>
-              ))} */}
-              {userdata.length === 0 && (
+              ))
+            ) : (
+              <tr>
+                <td colSpan="4">No Users Found</td>
+              </tr>
+            )}
+              {/* {userdata.length === 0 && (
                 <tr>
                   <td colSpan="4" className="p-4 text-center text-gray-500">
                     No users found
                   </td>
                 </tr>
-              )}
+              )} */}
             </tbody>
           </table>
         </div>
